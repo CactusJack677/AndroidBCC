@@ -2,6 +2,7 @@ package com.can.store.androidbcc;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -16,13 +17,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.amazonservices.mws.products.MarketplaceWebServiceProductsClient;
+import com.amazonservices.mws.products.MarketplaceWebServiceProductsException;
+import com.amazonservices.mws.products.model.ListMatchingProductsRequest;
+import com.amazonservices.mws.products.model.ListMatchingProductsResponse;
+import com.amazonservices.mws.products.model.ResponseHeaderMetadata;
+import com.amazonservices.mws.products.samples.MarketplaceWebServiceProductsSampleConfig;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private final static int SDKVER_LOLLIPOP = 21;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +41,65 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        /**
+         *
+         */
+        Button mwsTestButton = (Button) findViewById(R.id.mwsTestButton);
+        mwsTestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("クリックされました。");
+
+                // Get a client connection.
+                // Make sure you've set the variables in MarketplaceWebServiceProductsSampleConfig.
+                MarketplaceWebServiceProductsClient client = MarketplaceWebServiceProductsSampleConfig.getClient();
+
+                // Create a request.
+                ListMatchingProductsRequest request = new ListMatchingProductsRequest();
+                String sellerId = "A2SFOEUFUIPMQE";
+                request.setSellerId(sellerId);
+                String mwsAuthToken = "amzn.mws.8eab3ec9-c675-260c-7a5e-6ed54d1016ab";
+                request.setMWSAuthToken(mwsAuthToken);
+                String marketplaceId = "A1VC38T7YXB528";
+                request.setMarketplaceId(marketplaceId);
+                String query = "example";
+                request.setQuery(query);
+                String queryContextId = "example";
+                request.setQueryContextId(queryContextId);
+
+
+                try {
+                    // Call the service.
+                    ListMatchingProductsResponse response = client.listMatchingProducts(request);
+                    ResponseHeaderMetadata rhmd = response.getResponseHeaderMetadata();
+                    // We recommend logging every the request id and timestamp of every call.
+                    System.out.println("Response:");
+                    System.out.println("RequestId: "+rhmd.getRequestId());
+                    System.out.println("Timestamp: "+rhmd.getTimestamp());
+                    String responseXml = response.toXML();
+                    System.out.println(responseXml);
+                    response.getListMatchingProductsResult();
+                } catch (MarketplaceWebServiceProductsException ex) {
+                    // Exception properties are important for diagnostics.
+                    System.out.println("Service Exception:");
+                    ResponseHeaderMetadata rhmd = ex.getResponseHeaderMetadata();
+                    if(rhmd != null) {
+                        System.out.println("RequestId: "+rhmd.getRequestId());
+                        System.out.println("Timestamp: "+rhmd.getTimestamp());
+                    }
+                    System.out.println("Message: "+ex.getMessage());
+                    System.out.println("StatusCode: "+ex.getStatusCode());
+                    System.out.println("ErrorCode: "+ex.getErrorCode());
+                    System.out.println("ErrorType: "+ex.getErrorType());
+                    throw ex;
+                }
+
+
+            }
+        });
+
 
         /**
          * 検索ボタンの押下
@@ -54,9 +121,19 @@ public class MainActivity extends AppCompatActivity
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("クリックされました。");
-                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-                startActivity(intent);
+                if (Build.VERSION.SDK_INT >= SDKVER_LOLLIPOP) {
+                    System.out.println("Camera2が起動します。");
+                    // Camera2を使ったActivityを開く.
+                    Intent ittMainView_Camera2 = new Intent(MainActivity.this, CameraActivity.class);
+                    // 次画面のアクティビティ起動
+                    startActivity(ittMainView_Camera2);
+                } else {
+                    System.out.println("旧式が起動します。");
+                    // Cameraを使ったActivityを開く.
+                    Intent ittMainView_Camera = new Intent(MainActivity.this, OldCameraActivity.class);
+                    // 次画面のアクティビティ起動
+                    startActivity(ittMainView_Camera);
+                }
             }
         });
 

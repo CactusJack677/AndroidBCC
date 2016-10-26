@@ -8,69 +8,13 @@
     android:layout_alignParentStart="true"
     tools:context="com.can.store.androidbcc.CameraActivity" >
 
-    <SurfaceView
-        android:id="@+id/surface_view"
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
-
-    <ScrollView
+        android:layout_height="wrap_content"
+        android:text="save"
+        android:id="@+id/btn_taking_photo"/>
+    <TextureView
         android:layout_width="match_parent"
-        android:layout_height="100dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:orientation="vertical">
-
-            <TableLayout
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_below="@+id/surface_view"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="3dp"
-                android:id="@+id/productTable">
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </TableLayout>
-            </LinearLayout>
-    </ScrollView>
-
-
-    <WebView
-        android:id="@+id/webView1"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_centerVertical="true"
-        android:layout_alignRight="@+id/surface_view"
-        android:layout_alignEnd="@+id/surface_view"
-        android:layout_marginRight="0dp"
-        android:layout_marginEnd="0dp" />
-
-    <WebView
-        android:id="@+id/webView2"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_centerVertical="true"
-        android:layout_alignRight="@+id/surface_view"
-        android:layout_alignEnd="@+id/surface_view"
-        android:layout_marginRight="0dp"
-        android:layout_marginEnd="0dp" />
-
-
-
+        android:layout_height="match_parent"
+        android:id="@+id/camera2_view"/>
 </LinearLayout>

@@ -11,4 +11,5 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_camera">CameraActivity</string>
     <string name="title_activity_capture">CaptureActivity</string>
+    <string name="title_activity_old_camera">OldCameraActivity</string>
 </resources>
