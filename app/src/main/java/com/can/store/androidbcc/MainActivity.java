@@ -1,10 +1,11 @@
 package com.can.store.androidbcc;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,6 +13,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,6 +43,44 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+
+        /**
+         * 検索ボタンの押下
+         */
+        Button searchButton = (Button) findViewById(R.id.searchButton);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("クリックされました。");
+                //検索に遷移
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        /**
+         * 画像のローダー
+         * http://qiita.com/chuross/items/e3ca79065d9b67716ace
+         */
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+            .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+            .memoryCacheSize(2 * 1024 * 1024)
+            .build();
+        ImageLoader.getInstance().init(config);
+
+        final ImageView imageView = (ImageView) findViewById(R.id.mainImage);
+        String imageUrl = "https://store-can.appspot.com/img/bcc/researcher/premium-350-292_2.jpg";
+        ImageLoader loader = ImageLoader.getInstance();
+
+        // loadImageを使う場合
+        loader.loadImage(imageUrl, new SimpleImageLoadingListener() {
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                imageView.setImageBitmap(loadedImage);
+            }
+        });
+
+        //
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
