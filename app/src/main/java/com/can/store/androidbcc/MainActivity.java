@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -35,15 +34,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         /**
          * 検索ボタンの押下
          */
@@ -52,11 +42,37 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 System.out.println("クリックされました。");
-                //検索に遷移
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
                 startActivity(intent);
             }
         });
+
+        /**
+         * カメラボタンの押下
+         */
+        FloatingActionButton cameraButton = (FloatingActionButton) findViewById(R.id.cameraButton);
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("クリックされました。");
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        /**
+         * バーコードボタンの押下
+         */
+        Button barcodeButton = (Button) findViewById(R.id.barcodeButton);
+        barcodeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("クリックされました。");
+                Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         /**
          * 画像のローダー

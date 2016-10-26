@@ -37,4 +37,16 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="166dp"
         android:id="@+id/mainImage"/>
+
+    <Button
+        android:text="Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/searchButton"
+        android:layout_alignRight="@+id/searchButton"
+        android:layout_alignEnd="@+id/searchButton"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="32dp"
+        android:id="@+id/barcodeButton" />
 </RelativeLayout>
