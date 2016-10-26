@@ -3,18 +3,14 @@ package com.can.store.androidbcc;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
-import java.util.Locale;
 
 
 public class CameraActivity extends FragmentActivity {
@@ -33,9 +29,39 @@ public class CameraActivity extends FragmentActivity {
         for (int i=0; i<3; i++) {
             // 行を追加
             TableRow tableRow = (TableRow) View.inflate(CameraActivity.this, R.layout.parts_table_product, null);
+            TextView textView = (TextView)tableRow.getChildAt(0);
+            textView.setText("aaaaa" + 1);
             tableLayout.addView(tableRow);
 
         }
+
+        //WebViewの追加
+        //レイアウトで指定したWebViewのIDを指定する。
+        WebView webView1 = (WebView)findViewById(R.id.webView1);
+
+        //リンクをタップしたときに標準ブラウザを起動させない
+        webView1.setWebViewClient(new WebViewClient());
+
+        //最初にgoogleのページを表示する。
+        webView1.loadUrl("http://www.google.co.jp");
+
+        //jacascriptを許可する
+        webView1.getSettings().setJavaScriptEnabled(true);
+
+
+        //レイアウトで指定したWebViewのIDを指定する。
+        WebView webView2 = (WebView)findViewById(R.id.webView2);
+
+        //リンクをタップしたときに標準ブラウザを起動させない
+        webView2.setWebViewClient(new WebViewClient());
+
+        //最初にgoogleのページを表示する。
+        webView2.loadUrl("http://qiita.com/sy_sft_/items/508870dfccfb237d72fd");
+
+        //jacascriptを許可する
+        webView2.getSettings().setJavaScriptEnabled(true);
+
+
 
 
         //SurfaceView

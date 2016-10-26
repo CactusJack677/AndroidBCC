@@ -3,7 +3,7 @@
     android:layout_height="match_parent">
 
     <TextView />
-    <EditText />
-    <Button />
+    <TextView />
+    <TextView />
 
 </TableRow>
