@@ -14,21 +14,6 @@
     tools:context="com.can.store.androidbcc.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
-
-    <Button
-        android:text="サーチ"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/searchButton"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="3dp"
-        />
-
     <Button
         android:text="MWS"
         android:layout_width="wrap_content"
@@ -40,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app2:srcCompat="@drawable/ic_menu_camera"
-        android:layout_above="@+id/searchButton"
+        android:layout_above="@+id/mwsTestButton"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="166dp"
         android:id="@+id/mainImage"/>
@@ -56,4 +41,24 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="3dp"
         android:id="@+id/barcodeButton" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="B00BXVR62A"
+        android:ems="10"
+        android:layout_above="@+id/mainImage"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="27dp"
+        android:id="@+id/productCode" />
+
+    <Button
+        android:text="検索"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/productCode"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/searchButton" />
 </RelativeLayout>
