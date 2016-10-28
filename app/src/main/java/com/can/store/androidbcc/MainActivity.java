@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -21,6 +22,13 @@ import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -42,10 +50,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
          */
         Button mwsTestButton = (Button) findViewById(R.id.mwsTestButton);
         mwsTestButton.setOnClickListener(new View.OnClickListener() {
+
+            private Document document;
+
             @Override
             public void onClick(View view) {
                 System.out.println("クリックされました。");
 
+                WebView webView1 = (WebView) findViewById(R.id.webView1);
+                webView1.getSettings().setJavaScriptEnabled(true);
+                String data = "";
+                Document doc = null;
+                try {
+                    doc = Jsoup.connect("http://stackoverflow.com/questions/10695350/androi-and-jsoup").get();
+                    Elements elements = doc.getElementsByClass("post-tag");
+                    for(Element element : elements) {
+                        data += element.outerHtml();
+                        data += "<br/>";
+                    }
+                    webView1.loadData(data, "text/html", "UTF-8");
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
 
 
             }
