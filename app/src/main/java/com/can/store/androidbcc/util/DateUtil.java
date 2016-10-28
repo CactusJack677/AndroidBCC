@@ -1,6 +1,10 @@
 
 package com.can.store.androidbcc.util;
 
+import com.can.store.androidbcc.Const;
+import com.can.store.androidbcc.Const.Country;
+import com.can.store.androidbcc.exception.MyException;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -8,13 +12,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang.time.DateUtils;
-
-import slim3.jackpot.controller.Const;
-import slim3.jackpot.controller.Const.Country;
-import slim3.jackpot.controller.dto.MonthDto;
-import slim3.jackpot.exception.MyException;
 
 /**
  * 日付系のUtilです。 Dateを文字列操作、文字列返却する際には、引数で渡されたタイムゾーンに変換されます。<br/>
@@ -108,7 +105,6 @@ public class DateUtil {
 	 *
 	 * @param date
 	 * @param pattern
-	 * @param country
 	 * @return
 	 */
 	public static String formatDate(Date date, String pattern, String timeZone) {
@@ -265,51 +261,6 @@ public class DateUtil {
 		}
 	}
 
-	/**
-	 * 現在日付から引数で指定された日数を引いた月の開始日、終了日を取得する。
-	 *
-	 * @param calenderEnum
-	 * @param i
-	 * @return
-	 */
-	public static MonthDto getMonthPair(CalenderEnum calenderEnum, int i) {
-		String fmt = "yyyy/MM/dd";
-		MonthDto monthDto = new MonthDto();
-
-		SimpleDateFormat format = new SimpleDateFormat(fmt);
-		TimeZone timezone = TimeZone.getTimeZone("Asia/Tokyo");
-		Locale locale = Locale.JAPAN;
-		Calendar calendar = Calendar.getInstance(timezone, locale);
-
-		if(calenderEnum != null && i != 0) {
-			if(calenderEnum.equals(CalenderEnum.YEAR)) {
-				calendar.add(Calendar.YEAR, i);
-			} else if(calenderEnum.equals(CalenderEnum.DAY_OF_MONTH)) {
-				calendar.add(Calendar.MONTH, i);
-			} else if(calenderEnum.equals(CalenderEnum.DAY)) {
-				calendar.add(Calendar.DATE, i);
-			}
-		}
-
-		calendar.setTimeZone(timezone);
-		format.setTimeZone(timezone);
-
-		// 月初を取得
-		int days = calendar.getActualMinimum(Calendar.DAY_OF_MONTH);
-		calendar.set(Calendar.DAY_OF_MONTH, days);
-		String startDate = format.format(calendar.getTime());
-		monthDto.startDate = startDate + " 00:00";
-
-		// 月末を取得
-		days = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-		calendar.set(Calendar.DAY_OF_MONTH, days);
-		String endDate = format.format(calendar.getTime());
-		monthDto.endDate = endDate + " 23:59";
-
-		// 整形して表示
-		return monthDto;
-
-	}
 
 	/**
 	 * 現在日付のカレンダーの月初の日付を返却します。
@@ -350,8 +301,6 @@ public class DateUtil {
 	/**
 	 * 現在日付のカレンダーの月初の日付を返却します。
 	 *
-	 * @param calenderEnum
-	 * @param i
 	 * @return
 	 */
 	public static Date getMonthStartDate(Date date, boolean isJst) {
@@ -417,8 +366,6 @@ public class DateUtil {
 	/**
 	 * 現在日付のカレンダーの月末日を返却します。
 	 *
-	 * @param calenderEnum
-	 * @param i
 	 * @return
 	 */
 	public static Date getMonthEndDate(Date date, boolean isJst) {
@@ -466,20 +413,6 @@ public class DateUtil {
 		return false;
 	}
 
-	/**
-	 * 時間が0時0分0秒か判定します。
-	 *
-	 * @param date
-	 *            日付
-	 * @return 時間が0時0分0秒の場合true
-	 */
-	public static boolean isTimeTruncateDate(Date date) {
-		if(date == null) {
-			return false;
-		}
-		Date dateTruncate = DateUtils.truncate(date, Calendar.DAY_OF_MONTH);
-		return date.equals(dateTruncate);
-	}
 
 	/**
 	 * 現在の日付・時刻から指定の時間量を加算・減算した結果を返します。 年、月、日、時間、分、秒、ミリ秒の各時間フィールドに対し、 任意の時間量を設定できます。 たとえば、現在の日付時刻から 10 日前を計算する場合は以下となります。 Calendar cal = add(null,0,0,-10,0,0,0,0);
@@ -488,7 +421,6 @@ public class DateUtil {
 	 *
 	 * 各時間フィールドに設定する数量が0の場合は、現在の値が設定されます。
 	 *
-	 * @param cal
 	 *            日付時刻の指定があればセットする。 nullの場合、現在の日付時刻で新しいCalendarインスタンスを生成する。
 	 * @param addYear
 	 *            加算・減算する年数
@@ -580,42 +512,6 @@ public class DateUtil {
 		}
 	}
 
-	/**
-	 * 祝日ならTrue、それ以外ならFalse
-	 *
-	 * @param date
-	 * @return
-	 */
-	public static boolean isPublicHoliday(Date date) {
-		return Holiday.isHoliday(date);
-	}
-
-	/**
-	 * 土日祝日ならtrue、それ以外ならfalse
-	 *
-	 * @param date
-	 * @return
-	 */
-	public static boolean isHoliday(Date date) {
-		Calendar cal = getNewCalendarInstance();
-		cal.setTime(date);
-
-		int weekNum = cal.get(Calendar.DAY_OF_WEEK);
-		boolean isSatOrSun = weekNum == Calendar.SUNDAY || weekNum == Calendar.SATURDAY ? true : false;
-
-		// 土日もしくは祝日ならtrue
-		return isSatOrSun || Holiday.isHoliday(date);
-	}
-
-	/**
-	 * 土日祝日ならfalse、それ以外ならtrue
-	 *
-	 * @param date
-	 * @return
-	 */
-	public static boolean isBusinessDay(Date date) {
-		return !isHoliday(date);
-	}
 
 	// ================================
 	// カレンダー

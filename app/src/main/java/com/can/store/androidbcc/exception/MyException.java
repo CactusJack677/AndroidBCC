@@ -1,8 +1,9 @@
 package com.can.store.androidbcc.exception;
 
+import com.can.store.androidbcc.util.StackTraceUtil;
+
 import java.util.logging.Logger;
 
-import slim3.jackpot.util.StackTraceUtil;
 
 public class MyException extends RuntimeException {
 

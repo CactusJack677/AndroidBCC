@@ -2,7 +2,6 @@ package com.can.store.androidbcc.service;
 
 import com.amazonservices.mws.client.MwsObject;
 import com.amazonservices.mws.client.MwsReader;
-import com.amazonservices.mws.client.MwsUtl;
 import com.amazonservices.mws.client.MwsXmlReader;
 import com.can.store.androidbcc.Const;
 import com.can.store.androidbcc.Const.Country;
@@ -14,7 +13,6 @@ import com.can.store.androidbcc.util.StackTraceUtil;
 import com.can.store.androidbcc.util.StringUtil;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,7 +29,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
@@ -131,7 +128,7 @@ public abstract class AbstractMwsService {
 	 *
 	 * @return
 	 */
-	protected String createHttpRequest(Country country, Map<String, String> params) {
+	protected HttpURLConnection createHttpRequest(Country country, Map<String, String> params) {
 		try {
 			String parameter = "";
 			for(String param : params.keySet()) {
@@ -162,35 +159,8 @@ public abstract class AbstractMwsService {
 				if(StringUtil.isNotEmpty(params.get("MWSAuthToken"))){
 					conn.setRequestProperty("User-Agent", userAgent);
 				}
-				conn.setDoInput(true);
-				conn.setDoOutput(true);
-				conn.setReadTimeout(10000);
-				conn.setConnectTimeout(15000);
-				conn.setRequestMethod("POST");
-				conn.setDoInput(true);
-				conn.connect();
 
-				OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream(), Const.DEFAULT_CONTENT_TYPE);
-				writer.write(parameter);
-				writer.close();
-				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-				StringBuffer jsonString = new StringBuffer();
-				String line;
-				while ((line = br.readLine()) != null) {
-					jsonString.append(line);
-				}
-				br.close();
-				conn.disconnect();
-
-				int resp = conn.getResponseCode();
-
-				InputStream in = conn.getInputStream();
-				byte bodyByte[] = new byte[1024];
-				in.read(bodyByte);
-				in.close();
-				String content = new String(bodyByte, DEFAULT_ENCODING);
-
-				return content;
+				return conn;
 			} catch(IOException e) {
 				e.printStackTrace();
 			} finally {
@@ -269,20 +239,47 @@ public abstract class AbstractMwsService {
 	 * 共通のリクエストをセットします。
 	 *
 	 */
-	protected HTTPResponse fetch(HTTPRequest httpRequest, int retryCnt, long sleepMills) {
-		HTTPResponse httpResponse = null;
+	protected String fetch(HttpURLConnection conn, String payload, int retryCnt, long sleepMills) {
 		for(int i = 1; i <= retryCnt; i++) {
 			try {
-				httpResponse = urlFetchSearvice.fetch(httpRequest);
 
-				String content = new String(httpResponse.getContent(), DEFAULT_ENCODING);
-				if(httpResponse.getResponseCode() >= 400){
+
+				conn.setDoInput(true);
+				conn.setDoOutput(true);
+				conn.setReadTimeout(10000);
+				conn.setConnectTimeout(15000);
+				conn.setRequestMethod("POST");
+				conn.setDoInput(true);
+				conn.connect();
+
+				OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream(), Const.DEFAULT_CONTENT_TYPE);
+				writer.write(payload);
+				writer.close();
+				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				StringBuffer jsonString = new StringBuffer();
+				String line;
+				while ((line = br.readLine()) != null) {
+					jsonString.append(line);
+				}
+				br.close();
+				conn.disconnect();
+
+				int resp = conn.getResponseCode();
+
+				InputStream in = conn.getInputStream();
+				byte bodyByte[] = new byte[1024];
+				in.read(bodyByte);
+				in.close();
+				String content = new String(bodyByte, DEFAULT_ENCODING);
+
+
+				if(conn.getResponseCode() >= 400){
 				    log.info(content);
 				}
 
 				// リクエストスロットルの問題以外は返却
 				if(content.indexOf("RequestThrottled") == -1 && content.indexOf("Request is throttled") == -1 && content.indexOf("Service temporarily unavailable. Please try again") == -1) {
-					return httpResponse;
+					return null;
 				} else {
 					// リクエストスロットルの場合は、10秒まってリトライする。
 					try {
@@ -308,7 +305,7 @@ public abstract class AbstractMwsService {
 			}
 		}
 
-		return httpResponse;
+		return null;
 	}
 
 	/**
@@ -437,45 +434,43 @@ public abstract class AbstractMwsService {
 	/**
 	 * レスポンスのMD5をチェックします。
 	 *
-	 * @param httpResponse
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	protected boolean checkResponseMD5(HTTPResponse httpResponse) throws UnsupportedEncodingException {
+	protected boolean checkResponseMD5(HttpURLConnection conn) throws UnsupportedEncodingException {
 		// log.info("レスポンスのMD5をチェックします。");
-		List<HTTPHeader> headers = httpResponse.getHeaders();
 
-		String responseMD5 = null;
-		for(HTTPHeader httpHeader : headers) {
-			String name = httpHeader.getName();
-			String value = httpHeader.getValue();
-			// log.info(String.format("%s = %s", name, value));
-			if("Content-MD5".equals(name)) {
-				// log.info(String.format("Content-MD5:%s", value));
-				responseMD5 = value;
+		String responseMD5 = conn.getHeaderField("Content-MD5");
+
+		try {
+			InputStream in = conn.getInputStream();
+			byte bodyByte[] = new byte[1024];
+			in.read(bodyByte);
+			in.close();
+			// log.info(content.getBytes().length+"byte");
+
+			String md5 = computeContentMD5Header(in);
+			// log.info("CalcMD5:"+md5);
+			if (md5 == null || responseMD5 == null) {
+				return false;
 			}
+
+			boolean isSuccess = responseMD5.equals(md5);
+
+			if (isSuccess) {
+				return true;
+			} else {
+				log.info("MD5チェックサムが一致しませんでした。");
+
+				return false;
+			}
+
+		} catch (IOException e) {
+
 		}
-
-		String content = new String(httpResponse.getContent());
-		// log.info(content.getBytes().length+"byte");
-
-		String md5 = computeContentMD5Header(new ByteArrayInputStream(httpResponse.getContent()));
-		// log.info("CalcMD5:"+md5);
-		if(md5 == null || responseMD5 == null) {
-			return false;
-		}
-
-		boolean isSuccess = responseMD5.equals(md5);
-
-		if(isSuccess) {
-			return true;
-		} else {
-			log.info("MD5チェックサムが一致しませんでした。");
-
-			log.info(content);
-			return false;
-		}
+		return false;
 	}
+
 
 	/**
 	 * ダウンロードされるレポートのMD5チェックサムの計算 Consume the stream and return its Base-64 encoded MD5 checksum.
@@ -500,8 +495,10 @@ public abstract class AbstractMwsService {
 
 	public <T extends MwsObject> T stringToMwsResponseObject(String respData, Class<T> responseClass) {
 		MwsReader reader = new MwsXmlReader(respData);
-		T response = MwsUtl.newInstance(responseClass);
-		response.readFragmentFrom(reader);
+		T response = null;
+		// TODO: 2016/10/27 あとでかんがえる
+//		T response = MwsUtl.newInstance(responseClass);
+//		response.readFragmentFrom(reader);
 
 		return response;
 	}

@@ -10,7 +10,6 @@ public class IntegerUtil {
 
     /**
      *
-     * @param value
      * @return
      */
     public static boolean compare(Integer x, Integer y) {

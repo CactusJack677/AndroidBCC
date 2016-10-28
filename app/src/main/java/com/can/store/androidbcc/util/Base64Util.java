@@ -1,13 +1,13 @@
 
 package com.can.store.androidbcc.util;
 
+import com.can.store.androidbcc.Const;
+import com.can.store.androidbcc.exception.MyException;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.logging.Logger;
-
-import slim3.jackpot.controller.Const;
-import slim3.jackpot.exception.MyException;
 
 /*
  * Copyright 2004-2009 the Seasar Foundation and the Others.

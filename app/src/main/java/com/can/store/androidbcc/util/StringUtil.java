@@ -1,5 +1,7 @@
 package com.can.store.androidbcc.util;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -15,8 +17,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.slim3.util.IntegerUtil;
 
 public class StringUtil {
 	private final static Logger log = Logger.getLogger(StringUtil.class.getName());
@@ -176,7 +176,7 @@ public class StringUtil {
 			Matcher matcher = p.matcher(value);
 			while(matcher.find()) {
 				String group = matcher.group(1);
-				int num = IntegerUtil.toPrimitiveInt(group);
+				int num = IntegerUtil.parseInt(group);
 				char ch = (char) num;
 				value = value.replaceAll(matcher.group(), String.valueOf(ch));
 			}
@@ -920,8 +920,6 @@ public class StringUtil {
 	 *
 	 * @param str
 	 *            String 切り出し対象文字列
-	 * @param len
-	 *            Integer 切り出しバイト数
 	 * @param charset
 	 *            String 文字コード
 	 *
@@ -974,8 +972,6 @@ public class StringUtil {
 	 *
 	 * @param str
 	 *            String 切り出し対象文字列
-	 * @param len
-	 *            Integer 切り出しバイト数
 	 *
 	 * @return String 切り出し後の文字列
 	 */
