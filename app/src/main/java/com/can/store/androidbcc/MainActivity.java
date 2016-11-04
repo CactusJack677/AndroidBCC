@@ -4,31 +4,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -37,47 +26,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-
-        /**
-         *
-         */
-        Button mwsTestButton = (Button) findViewById(R.id.mwsTestButton);
-        mwsTestButton.setOnClickListener(new View.OnClickListener() {
-
-            private Document document;
-
-            @Override
-            public void onClick(View view) {
-                System.out.println("クリックされました。");
-
-                WebView webView1 = (WebView) findViewById(R.id.webView1);
-                webView1.getSettings().setJavaScriptEnabled(true);
-                String data = "";
-                Document doc = null;
-                try {
-                    doc = Jsoup.connect("http://stackoverflow.com/questions/10695350/androi-and-jsoup").get();
-                    Elements elements = doc.getElementsByClass("post-tag");
-                    for(Element element : elements) {
-                        data += element.outerHtml();
-                        data += "<br/>";
-                    }
-                    webView1.loadData(data, "text/html", "UTF-8");
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            }
-        });
-
 
         /**
          * 検索ボタンの押下
@@ -95,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /**
          * カメラボタンの押下
          */
-        FloatingActionButton cameraButton = (FloatingActionButton) findViewById(R.id.cameraButton);
+        Button cameraButton = (Button) findViewById(R.id.cameraButton);
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -153,38 +103,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        // メニューの要素を追加
+        menu.add("Normal item");
+
+        // メニューの要素を追加して取得
+        MenuItem actionItem = menu.add("Action Button");
+
+        // SHOW_AS_ACTION_IF_ROOM:余裕があれば表示
+        actionItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+        // アイコンを設定
+        actionItem.setIcon(android.R.drawable.ic_menu_share);
+
+        // メニューの要素を追加して取得
+        MenuItem aaaaItem = menu.add("aaaa Button");
+
+        // SHOW_AS_ACTION_IF_ROOM:余裕があれば表示
+        aaaaItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+        // アイコンを設定
+        aaaaItem.setIcon(android.R.drawable.ic_dialog_alert);
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
+        Toast.makeText(this, "Selected Item: " + item.getTitle(), Toast.LENGTH_SHORT).show();
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -215,8 +172,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 }
