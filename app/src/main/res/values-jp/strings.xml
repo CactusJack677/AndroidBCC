@@ -1,0 +1,4 @@
+<resources>
+    <string name="delete">削除</string>
+    <string name="addCart">カートに入れる</string>
+</resources>

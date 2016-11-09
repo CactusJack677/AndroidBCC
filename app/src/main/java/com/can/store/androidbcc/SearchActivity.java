@@ -3,6 +3,7 @@ package com.can.store.androidbcc;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,11 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.can.store.androidbcc.Const.BaseEnum;
 import com.can.store.androidbcc.Const.ParentNode;
 import com.can.store.androidbcc.dto.OptimazeResult;
@@ -26,6 +28,10 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,7 +40,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -43,7 +48,6 @@ import butterknife.ButterKnife;
  */
 public class SearchActivity extends Activity {
 
-    @BindView(R.id.searchButton) Button button1;
     List<OptimazeResult> optimazeResultList = new ArrayList<>();
 
     @Override
@@ -78,15 +82,20 @@ public class SearchActivity extends Activity {
 
         ProductInfo productInfo = gson.fromJson(result, ProductInfo.class);
 
-        // TODO: 2016/11/04 テーブルレイアウト
+        if(productInfo == null){
+            throw new MyException("productInfo is null.");
+        }
 
-        ProductAdapter productAdapter = new ProductAdapter();
+        OptimazeResult optimazeResult = productInfo.getOptimazeResultList().get(0);
+        for (int i = 0; i < 10; i++) {
+            optimazeResult.setAsin(i + "aaaaaaaaaaaa");
+            productInfo.getOptimazeResultList().add(optimazeResult);
+        }
+        Log.d("debug", productInfo.getOptimazeResultList().size() + "件あります。");
+        ProductAdapter productAdapter = new ProductAdapter(SearchActivity.this, 0, productInfo.getOptimazeResultList());
 
         ListView listView = (ListView)findViewById(R.id.productListView);
         listView.setAdapter(productAdapter);
-        optimazeResultList = productInfo.getOptimazeResultList();
-        for (OptimazeResult optimazeResult : optimazeResultList) {
-        }
         productAdapter.notifyDataSetChanged();
 
 
@@ -156,42 +165,73 @@ public class SearchActivity extends Activity {
 
     }
 
-    private class ProductAdapter extends BaseAdapter {
 
-        @Override
-        public int getCount() {
-            return optimazeResultList.size();
+
+    public class ProductAdapter extends ArrayAdapter<OptimazeResult> {
+        private LayoutInflater layoutInflater_;
+
+        public ProductAdapter(Context context, int textViewResourceId, List<OptimazeResult> objects) {
+            super(context, textViewResourceId, objects);
+            layoutInflater_ = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
-        public Object getItem(int position) {
-            return optimazeResultList.get(position);
-        }
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // 特定の行(position)のデータを得る
+            OptimazeResult item = (OptimazeResult)getItem(position);
 
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-
-            if(view == null){
-                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                view = inflater.inflate(R.layout.parts_product, null);
+            // convertViewは使い回しされている可能性があるのでnullの時だけ新しく作る
+            if (null == convertView) {
+                convertView = layoutInflater_.inflate(R.layout.parts_product, null);
             }
 
-            OptimazeResult optimazeResult = (OptimazeResult)getItem(i);
+            // CustomDataのデータをViewの各Widgetにセットする
+            TextView title;
+            title = (TextView)convertView.findViewById(R.id.title);
+            title.setText(item.getTitle());
+            Log.d("debug", item.getTitle());
 
-            TextView title = (TextView) view.findViewById(R.id.title);
-            TextView price = (TextView) view.findViewById(R.id.price);
+            TextView asin;
+            asin = (TextView)convertView.findViewById(R.id.asin);
+            asin.setText(item.getAsin());
+            Log.d("debug", item.getAsin());
 
-            title.setText(optimazeResult.getTitle());
 
-            return view;
+            /**
+             * 画像のローダー
+             * http://qiita.com/chuross/items/e3ca79065d9b67716ace
+             */
+            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
+                    .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
+                    .memoryCacheSize(2 * 1024 * 1024)
+                    .build();
+            ImageLoader.getInstance().init(config);
+
+            final ImageView imageView = (ImageView) convertView.findViewById(R.id.productImage);
+            ImageLoader loader = ImageLoader.getInstance();
+
+            // loadImageを使う場合
+            loader.loadImage(item.getImageUrl(), new SimpleImageLoadingListener() {
+                @Override
+                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                    imageView.setImageBitmap(loadedImage);
+                }
+            });
+
+            BootstrapButton deleteProductButton = (BootstrapButton)convertView.findViewById(R.id.deleteProductButton);
+            deleteProductButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    TextView asin = (TextView)view.findViewById(R.id.asin);
+                    Log.d("debug", asin.getText().toString());
+                }
+            });
+
+            return convertView;
         }
     }
+
+
 
 
 }

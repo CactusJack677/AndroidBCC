@@ -1,27 +1,90 @@
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-          android:id="@+id/productListView"
-    >
+    android:background="#fff"
+    android:layout_marginBottom="5dp">
+
 
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
         <ImageView
+            android:id="@+id/productImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_menu_share"/>
+
+
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-        <TextView
-            android:id="@+id/title"
-            android:text="あああああああああああああああああああああ"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-        <TextView
-            android:id="@+id/price"
-            android:text="980円"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/title"
+                android:text="あああああああああああああああああああああ"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/price"
+                    android:text="980円"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+                <TextView
+                    android:id="@+id/asin"
+                    android:text="XXXXXXXXXXXXX"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.beardedhen.androidbootstrap.BootstrapButton
+                    android:id="@+id/deleteProductButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/delete"
+                    bootstrapBrand="success"
+                    bootstrapSize="lg"
+                    buttonMode="regular"
+                    showOutline="false"
+                    roundedCorners="true"
+                    android:layout_margin="10dp"
+                    bootstrapText="Button  {fa_heart} {fa_android}"
+                    />
+
+
+                <com.beardedhen.androidbootstrap.BootstrapLabel
+                    android:id="@+id/subCondition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bootstrapBrand="info"
+                    app:bootstrapHeading="h6"
+                    app:roundedCorners="true"
+                    android:text="新品"
+                    />
+                <com.beardedhen.androidbootstrap.BootstrapLabel
+                    android:id="@+id/salesRoute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bootstrapBrand="success"
+                    app:bootstrapHeading="h6"
+                    app:roundedCorners="false"
+                    android:text="FBA"
+                    />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-</ListView>
+
+</LinearLayout>

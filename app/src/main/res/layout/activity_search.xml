@@ -3,16 +3,14 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:orientation="vertical"
-             android:background="#0099cc"
              tools:context="com.can.store.androidbcc.SearchActivity">
 
-    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                 android:id="@+id/searchResultTable"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:stretchColumns="1">
-
-    </TableLayout>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/productListView"
+        >
+    </ListView>
 
     <WebView
         android:layout_width="match_parent"
@@ -20,28 +18,5 @@
         android:id="@+id/webView1">
 
     </WebView>
-
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_x="69dp"
-        android:layout_y="483dp">
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </TableLayout>
 
 </LinearLayout>

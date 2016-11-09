@@ -12,4 +12,6 @@
     <string name="title_activity_camera">CameraActivity</string>
     <string name="title_activity_capture">CaptureActivity</string>
     <string name="title_activity_old_camera">OldCameraActivity</string>
+    <string name="delete">remove</string>
+    <string name="addCart">Add Cart</string>
 </resources>

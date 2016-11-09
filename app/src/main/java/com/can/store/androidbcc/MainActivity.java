@@ -54,6 +54,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /**
+         * MWSテスト用
+         */
+        Button mwsTestButton = (Button) findViewById(R.id.mwsTestButton);
+        mwsTestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("クリックされました。");
+                Uri.Builder builder = new Uri.Builder();
+                builder.scheme("https");
+                builder.authority("store-can.appspot.com");
+                builder.path("/api/bcc/GetProductInfoForJan");
+                builder.appendQueryParameter("idList", "4210201075592");
+                AsyncHttpRequest task = new AsyncHttpRequest(MainActivity.this);
+                task.execute(builder);
+            }
+        });
+
+        /**
          * カメラボタンの押下
          */
         Button cameraButton = (Button) findViewById(R.id.cameraButton);
@@ -138,11 +156,11 @@ public class MainActivity extends AppCompatActivity {
             builder.scheme("https");
             builder.authority("store-can.appspot.com");
             builder.path("/api/bcc/GetProductInfoForJan");
-            builder.appendQueryParameter("idList", jan);
-            AsyncHttpRequest task = new AsyncHttpRequest(this);
-            task.execute(builder);
-
-
+            if(StringUtil.isNotEmpty(jan)){
+                builder.appendQueryParameter("idList", jan);
+                AsyncHttpRequest task = new AsyncHttpRequest(this);
+                task.execute(builder);
+            }
         }
     }
 
@@ -161,8 +179,6 @@ public class MainActivity extends AppCompatActivity {
         // ここが非同期で処理される部分みたいたぶん。
         @Override
         protected String doInBackground(Uri.Builder... builder) {
-            // httpリクエスト投げる処理を書く。
-            // ちなみに私はHttpClientを使って書きましたー
             try {
                 // TODO: 2016/1こで商品検索
                 Log.d("builder", builder[0].build().toString());
