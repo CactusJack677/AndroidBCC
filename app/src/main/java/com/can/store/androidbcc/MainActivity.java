@@ -1,11 +1,14 @@
 package com.can.store.androidbcc;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Build;
+import android.net.Uri;
+import android.net.Uri.Builder;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,12 +17,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.can.store.androidbcc.exception.MyException;
+import com.can.store.androidbcc.util.StackTraceUtil;
+import com.can.store.androidbcc.util.StringUtil;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
+
+public class MainActivity extends AppCompatActivity {
 
     private final static int SDKVER_LOLLIPOP = 21;
 
@@ -49,19 +60,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= SDKVER_LOLLIPOP) {
-                    System.out.println("Camera2が起動します。");
-                    // Camera2を使ったActivityを開く.
-                    Intent ittMainView_Camera2 = new Intent(MainActivity.this, CameraActivity.class);
+
+                IntentIntegrator integrator = new IntentIntegrator(MainActivity.this);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
+                integrator.setCameraId(0);
+                integrator.setPrompt("Scan a barcode");
+                integrator.initiateScan();
+
                     // 次画面のアクティビティ起動
-                    startActivity(ittMainView_Camera2);
-                } else {
-                    System.out.println("旧式が起動します。");
-                    // Cameraを使ったActivityを開く.
-                    Intent ittMainView_Camera = new Intent(MainActivity.this, OldCameraActivity.class);
-                    // 次画面のアクティビティ起動
-                    startActivity(ittMainView_Camera);
-                }
+//                    startActivity(barcodeIntent);
+//                if (Build.VERSION.SDK_INT >= SDKVER_LOLLIPOP) {
+//                    System.out.println("Camera2が起動します。");
+//                    // Camera2を使ったActivityを開く.
+//                    Intent ittMainView_Camera2 = new Intent(MainActivity.this, CameraActivity.class);
+//                    // 次画面のアクティビティ起動
+//                    startActivity(ittMainView_Camera2);
+//                } else {
+//                    System.out.println("旧式が起動します。");
+//                    // Cameraを使ったActivityを開く.
+//                    Intent ittMainView_Camera = new Intent(MainActivity.this, OldCameraActivity.class);
+//                    // 次画面のアクティビティ起動
+//                    startActivity(ittMainView_Camera);
+//                }
             }
         });
 
@@ -104,6 +124,78 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //
 
 
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (scanResult != null) {
+            String jan = scanResult.getContents();
+            Log.d("scan", "==-----:  " + jan);
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("https");
+            builder.authority("store-can.appspot.com");
+            builder.path("/api/bcc/GetProductInfoForJan");
+            builder.appendQueryParameter("idList", jan);
+            AsyncHttpRequest task = new AsyncHttpRequest(this);
+            task.execute(builder);
+
+
+        }
+    }
+
+
+    public class AsyncHttpRequest extends AsyncTask<Builder, Void, String> {
+
+        private Activity mainActivity;
+
+        public AsyncHttpRequest(Activity activity) {
+
+            // 呼び出し元のアクティビティ
+            this.mainActivity = activity;
+        }
+
+        // このメソッドは必ずオーバーライドする必要があるよ
+        // ここが非同期で処理される部分みたいたぶん。
+        @Override
+        protected String doInBackground(Uri.Builder... builder) {
+            // httpリクエスト投げる処理を書く。
+            // ちなみに私はHttpClientを使って書きましたー
+            try {
+                // TODO: 2016/1こで商品検索
+                Log.d("builder", builder[0].build().toString());
+                String url = builder[0].build().toString();
+                if(StringUtil.isEmpty(url)){
+                    return null;
+                }
+                Response response = Jsoup.connect(url).execute();
+
+                Log.d("body", response.body());
+
+                // TODO: 2016/11/04 検索結果を別のアクティビティに渡す
+
+                return response.body();
+            } catch (Exception e){
+                e.printStackTrace();
+                throw new MyException(StackTraceUtil.toString(e));
+            }
+        }
+
+
+        // このメソッドは非同期処理の終わった後に呼び出されます
+        @Override
+        protected void onPostExecute(String result) {
+            // 取得した結果をテキストビューに入れちゃったり
+            Log.d("コールバック", result);
+
+
+            System.out.println("クリックされました。");
+            Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+            intent.putExtra("result", result);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -152,26 +244,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        return true;
-    }
 }

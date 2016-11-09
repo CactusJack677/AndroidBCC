@@ -1,6 +1,7 @@
 package com.can.store.androidbcc;
 
 import com.amazonservices.mws.products.MarketplaceWebServiceProductsConfig;
+import com.can.store.androidbcc.exception.MyException;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -2519,6 +2520,256 @@ public class Const {
         public void setSubscriptionName(String subscriptionName) {
             this.subscriptionName = subscriptionName;
         }
+
+	}
+
+
+	/**
+	 * Amazonの販売経路
+	 * @author kitazawa.takuya
+	 *
+	 */
+	public static enum SalesRoute{
+		AMAZON ("AMAZON", "FBA", "Amazon", "label-important"),
+		MERCHANT ("MERCHANT", "手出し", "Merchant", "label-info");
+
+		private String code;
+		private String name;
+		private String mwsFieldName;
+		private String labelClassName;
+
+		public String getMwsFieldName() {
+			return mwsFieldName;
+		}
+
+		public void setMwsFieldName(String mwsFieldName) {
+			this.mwsFieldName = mwsFieldName;
+		}
+
+		private SalesRoute(String code, String name, String mwsFieldName, String labelClassName) {
+			this.setCode(code);
+			this.setName(name);
+			this.setMwsFieldName(mwsFieldName);
+			this.setLabelClassName(labelClassName);
+		}
+
+		/**
+		 * codeで検索します。
+		 * @param code
+		 * @return
+		 */
+		public static SalesRoute find(String code){
+			code = code.toUpperCase();
+			SalesRoute[] values = SalesRoute.values();
+			for (SalesRoute t : values) {
+				if(code.equals(t.getCode()) || code.equals(t.getMwsFieldName())){
+					return t;
+				}
+			}
+			return null;
+		}
+		public void setName(String name) {this.name = name;}
+		public String getName() {return name;}
+		public void setCode(String code) {this.code = code;}
+		public String getCode() {return code;}
+
+		public String getLabelClassName() {
+			return labelClassName;
+		}
+
+		public void setLabelClassName(String labelClassName) {
+			this.labelClassName = labelClassName;
+		}
+	}
+
+
+	/**
+	 * Amazonのセラー評価
+	 * @author kitazawa.takuya
+	 *
+	 */
+	public static enum FeedbackRating{
+
+		JUST_LAUNCHED ("Just Launched", 60),
+		RATE_LESS_THAN_69 ("Less than 70%", 69),
+		RATE_70_79 ("70-79%", 79),
+		RATE_80_89 ("80-89%", 89),
+		RATE_90_94 ("90-94%", 94),
+		RATE_95_97 ("95-97%", 97),
+		RATE_98_100 ("98-100%", 100),
+		;
+		private String name;
+		private int highValue;
+
+		public int getHighValue() {
+			return highValue;
+		}
+		public void setHighValue(int highValue) {
+			this.highValue = highValue;
+		}
+		//コンストラクタ
+		private FeedbackRating(String name, int highValue) {
+			this.setName(name);
+			this.setHighValue(highValue);
+		}
+		public void setName(String name) {this.name = name;}
+		public String getName() {return name;}
+
+		public static FeedbackRating find(String code){
+			FeedbackRating[] values = FeedbackRating.values();
+			for (FeedbackRating rating : values) {
+				if(code.equals(rating.getName())){
+					return rating;
+				}
+			}
+			throw new MyException("rating error " + code);
+		}
+
+
+	}
+
+
+	public static enum ParentNode implements BaseEnum{
+		JP_MUSIC( "jp-music" ,"ミュージック", true, true, ItemCategoryYahoo.MUSIC),
+		JP_BOOKS( "jp-books" ,"本", true, true, null),
+		JP_VIDEOGAMES( "jp-videogames" ,"TVゲーム", true, true, ItemCategoryYahoo.VIDEOGAME),
+		JP_DVD( "jp-dvd" ,"DVD", true, true, null),
+		JP_COMPUTERS( "jp-computers" ,"パソコン・周辺機器", true, true, ItemCategoryYahoo.PC_PERIPHERAL),
+		JP_MUSICAL_INSTRUMENTS( "jp-musical-instruments" ,"楽器", true, true, ItemCategoryYahoo.MUSICAL_INSTRUMENT),
+		JP_CE( "jp-ce" ,"家電＆カメラ", true, true, ItemCategoryYahoo.HOMEAPPLIANCE_CAMERA),
+		JP_TOYS( "jp-toys" ,"おもちゃ＆ホビー", true, true, ItemCategoryYahoo.TOYS_HOBBY),
+		JP_SOFTWARE( "jp-software" ,"PCソフト", true, true, ItemCategoryYahoo.PCSOFT),
+		JP_OFFICE_PRODUCTS( "jp-office-products" ,"文房具＆オフィス用品", true, true, ItemCategoryYahoo.STATIONERY_OFFICE),
+		JP_FOOD( "jp-food" ,"食品＆飲料", true, true, ItemCategoryYahoo.FOOD_DRINK),
+		JP_PET_SUPPLIES( "jp-pet-supplies" ,"ペット用品", true, true, ItemCategoryYahoo.PET),
+		JP_HEALTH( "jp-health" ,"ヘルス＆ビューティー", true, true, ItemCategoryYahoo.HEALTH_BEAUTY),
+		JP_BEAUTY( "jp-beauty" ,"コスメ", true, true, ItemCategoryYahoo.HEALTH_BEAUTY),
+		JP_BABY( "jp-baby" ,"ベビー＆マタニティ", true, true, ItemCategoryYahoo.BABY_MATERNITY),
+		JP_APPAREL( "jp-apparel" ,"服＆ファッション小物", true, true, ItemCategoryYahoo.APPAREL_SHOES),
+		JP_SHOES( "jp-shoes" ,"シューズ＆バッグ", true, true, ItemCategoryYahoo.APPAREL_SHOES),
+		JP_JEWELRY( "jp-jewelry" ,"ジュエリー", true, true, null),
+		JP_WATCHES( "jp-watches" ,"時計", true, true, null),
+		JP_KITCHEN( "jp-Kitchen" ,"ホーム＆キッチン"  ,true, true, ItemCategoryYahoo.HOME_KITCHEN),
+		JP_SPORTS( "jp-sports" ,"スポーツ＆アウトドア", true, true, ItemCategoryYahoo.SPORTS_OUTDOOR),
+		JP_AUTOMOTIVE( "jp-automotive" ,"カー＆バイク用品", true, true, ItemCategoryYahoo.CAR_MOTORCYCLE),
+		JP_TOOLS( "jp-tools" ,"DIY・工具", true, true, ItemCategoryYahoo.DIY_TOOLS),
+		JP_UNKNOWN( "jp-xxxx" ,"不明", false, false, null),
+		;
+
+		private String id;
+		private String name;
+		private boolean rakuten;
+		private boolean yShopping;
+		private ItemCategoryYahoo itemCategoryYahoo;
+
+
+		//コンストラクタ
+		private ParentNode(String id, String name, boolean rakuten, boolean yShopping, ItemCategoryYahoo itemCategoryYahoo) {
+			this.setId(id);
+			this.setName(name);
+			this.setRakuten(yShopping);
+			this.setyShopping(yShopping);
+			this.itemCategoryYahoo = itemCategoryYahoo;
+		}
+		public void setName(String name) {this.name = name;}
+		public String getName() {return name;}
+		public String getId() {
+			return id;
+		}
+		public void setId(String id) {
+			this.id = id;
+		}
+		public boolean isRakuten() {
+			return rakuten;
+		}
+		public void setRakuten(boolean rakuten) {
+			this.rakuten = rakuten;
+		}
+		public boolean isyShopping() {
+			return yShopping;
+		}
+		public void setyShopping(boolean yShopping) {
+			this.yShopping = yShopping;
+		}
+		public ItemCategoryYahoo getItemCategoryYahoo() {
+			return itemCategoryYahoo;
+		}
+		@Override
+		public String getJsonDispName() {
+
+			return null;
+		}
+		@Override
+		public String getJsonDescription() {
+
+			return null;
+		}
+		@Override
+		public String getJsonLabelClass() {
+
+			return null;
+		}
+		@Override
+		public String getJsonButtonClass() {
+
+			return null;
+		}
+
+	}
+
+	/**
+	 * ヤフー商品カテゴリー
+	 * @author kitazawa.takuya
+	 *
+	 */
+	public static enum ItemCategoryYahoo {
+		HEALTH_FOOD( "health-food" ,"健康食品", null),
+		MEDICINE( "medicine" ,"薬", null),
+		ALCOHOL( "alcohol" ,"お酒", null),
+		PC_PERIPHERAL( "pc-peripheral" ,"パソコン・周辺機器", null),
+		HOME_KITCHEN( "home-kitchen" ,"ホーム＆キッチン", null),
+		MUSICAL_INSTRUMENT( "musical-instrument" ,"楽器", null),
+		DIY_TOOLS( "diy-tools" ,"DIY・工具", null),
+		CAR_MOTORCYCLE( "car-motorcycle" ,"カー＆バイク用品", null),
+		PET( "pet" ,"ペット用品", null),
+		FOOD_DRINK( "food-drink" ,"食品＆飲料", null),
+		VIDEOGAME( "videogame" ,"TVゲーム", null),
+		PCSOFT( "pcsoft" ,"PCソフト", null),
+		SHOES_BAG( "shoes-bag" ,"シューズ＆バッグ", null),
+		HONNYARADOU( "honnyaradou" ,"ほんやら堂", null),
+		MUSIC( "music" ,"ミュージック", null),
+		SPORTS_OUTDOOR( "sports-outdoor" ,"スポーツ＆アウトドア", null),
+		BABY_MATERNITY( "baby-maternity" ,"ベビー＆マタニティ", null),
+		HOMEAPPLIANCE_CAMERA( "home-appliance-camera" ,"家電＆カメラ", null),
+		STATIONERY_OFFICE( "stationery-office" ,"文房具＆オフィス用品", null),
+		HEALTH_BEAUTY( "health-beauty" ,"ヘルス＆ビューティー", null),
+		TOYS_HOBBY( "toys-hobby" ,"おもちゃ＆ホビー", null),
+		APPAREL_SHOES( "apparel-shoes" ,"アパレル＆シューズ", null),
+		CLOTHING_FASHION( "clothing-fashion" ,"服＆ファッション小物", null),
+		RECOMMEND( "recommend" ,"おすすめ商品", null),
+		;
+
+		private String id;
+		private String name;
+		private ParentNode relateAmazonCategory;
+
+		private ItemCategoryYahoo (String id, String name, ParentNode relateAmazonCategory) {
+			this.id = id;
+			this.name= name;
+			this.relateAmazonCategory = relateAmazonCategory;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public ParentNode getRelateAmazonCategory() {
+			return relateAmazonCategory;
+		}
 
 	}
 

@@ -27,7 +27,7 @@ public class OldCameraActivity extends AppCompatActivity {
         //テーブルに行を追加
         for (int i=0; i<3; i++) {
             // 行を追加
-            TableRow tableRow = (TableRow) View.inflate(OldCameraActivity.this, R.layout.parts_table_product, null);
+            TableRow tableRow = (TableRow) View.inflate(OldCameraActivity.this, R.layout.parts_product, null);
             TextView textView = (TextView)tableRow.getChildAt(0);
             textView.setText("aaaaa" + 1);
             tableLayout.addView(tableRow);

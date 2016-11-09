@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.can.store.androidbcc.barcode.CaptureActivityAnyOrientation;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -23,8 +22,6 @@ public class CaptureActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 IntentIntegrator integrator = new IntentIntegrator(CaptureActivity.this);
-                integrator.setCaptureActivity(CaptureActivityAnyOrientation.class);
-                integrator.setOrientationLocked(false);
                 integrator.initiateScan();
             }
         });

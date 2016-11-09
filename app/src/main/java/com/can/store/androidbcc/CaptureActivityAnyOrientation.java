@@ -1,6 +1,4 @@
-package com.can.store.androidbcc.barcode;
-
-import com.can.store.androidbcc.CaptureActivity;
+package com.can.store.androidbcc;
 
 /**
  * Created by kitazawa.takuya on 2016/10/26.

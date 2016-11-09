@@ -55,6 +55,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -77,6 +78,7 @@ public class CameraActivity extends FragmentActivity {
     private Builder mPreviewBuilder;
     private CameraCaptureSession mPreviewSession;
     private Button mBtnTakingPhoto;
+    private Button mBtnBarcodeSearch;
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
@@ -111,6 +113,9 @@ public class CameraActivity extends FragmentActivity {
 
         mBtnTakingPhoto = (Button) findViewById(R.id.btn_taking_photo);
         mBtnTakingPhoto.setOnClickListener(mBtnShotClicked);
+
+        mBtnBarcodeSearch = (Button) findViewById(R.id.btn_barcode_search);
+        mBtnBarcodeSearch.setOnClickListener(mBtnBarcodeClicked);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -143,6 +148,12 @@ public class CameraActivity extends FragmentActivity {
             takePicture();
         }
     };
+    private final OnClickListener mBtnBarcodeClicked = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            IntentIntegrator intentIntegrator = new IntentIntegrator(CameraActivity.this);
+        }
+    };
 
     @TargetApi(21)
     private void prepareCameraView() {
@@ -166,7 +177,6 @@ public class CameraActivity extends FragmentActivity {
                 // プレビュー画面のサイズ調整.
                 this.configureTransform();
 
-                Log.d("aaaa", "" + ActivityCompat.checkSelfPermission(this, permission.CAMERA));
                 if (ActivityCompat.checkSelfPermission(this, permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
@@ -389,6 +399,7 @@ public class CameraActivity extends FragmentActivity {
             e.printStackTrace();
         }
     }
+
 
     private OnScanCompletedListener mScanSavedFileCompleted = new OnScanCompletedListener() {
         @Override
