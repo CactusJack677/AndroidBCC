@@ -1,12 +1,15 @@
 package com.can.store.androidbcc;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.Uri.Builder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -23,8 +26,10 @@ import com.can.store.androidbcc.util.StringUtil;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.jsoup.Connection.Response;
@@ -33,6 +38,7 @@ import org.jsoup.Jsoup;
 public class MainActivity extends AppCompatActivity {
 
     private final static int SDKVER_LOLLIPOP = 21;
+    private final static int BLUETOOTH_REQUEST = 10000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +46,49 @@ public class MainActivity extends AppCompatActivity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_main);
 
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        String rmUserId = sp.getString("rmUserId", "aaaaa");
+        Log.d("rmUserId", rmUserId);
+
+        BluetoothAdapter Bt = BluetoothAdapter.getDefaultAdapter();
+        if (Bt != null) {
+            boolean btEnable = Bt.isEnabled();
+            if(btEnable == true){
+                Log.d("debug", "BluetoothがONになっています。");
+                //BluetoothがONだった場合の処理
+            }else{
+                Log.d("debug", "BluetoothがONになっていません。");
+                //OFFだった場合、ONにすることを促すダイアログを表示する画面に遷移
+                Intent btOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(btOn, BLUETOOTH_REQUEST);
+            }
+        }else{
+            Log.d("debug", "Bluetoothが利用できない端末です。");
+        }
+
         /**
          * 検索ボタンの押下
          */
-        Button searchButton = (Button) findViewById(R.id.searchButton);
-        searchButton.setOnClickListener(new View.OnClickListener() {
+        Button authButton = (Button) findViewById(R.id.authButton);
+        authButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("クリックされました。");
-                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                Intent intent = new Intent(MainActivity.this, AuthActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        /**
+         * 検索ボタンの押下
+         */
+        Button settingBtn = (Button) findViewById(R.id.settingBtn);
+        settingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("クリックされました。");
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
             }
         });
@@ -103,34 +143,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /**
-         * バーコードボタンの押下
-         */
-        Button barcodeButton = (Button) findViewById(R.id.barcodeButton);
-        barcodeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.println("クリックされました。");
-                Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
-                startActivity(intent);
-            }
-        });
-
 
         /**
          * 画像のローダー
          * http://qiita.com/chuross/items/e3ca79065d9b67716ace
          */
+
+
+        DisplayImageOptions displayImageOptions = new DisplayImageOptions.Builder()
+            .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+            .build();
+
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
             .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
             .memoryCacheSize(2 * 1024 * 1024)
+            .defaultDisplayImageOptions(displayImageOptions)
             .build();
         ImageLoader.getInstance().init(config);
 
-        final ImageView imageView = (ImageView) findViewById(R.id.mainImage);
-        String imageUrl = "https://store-can.appspot.com/img/bcc/researcher/premium-350-292_2.jpg";
-        ImageLoader loader = ImageLoader.getInstance();
 
+        final ImageView imageView = (ImageView) findViewById(R.id.mainImage);
+        String imageUrl = "https://store-can.appspot.com/lp/d/images/main_img.jpg";
+        ImageLoader loader = ImageLoader.getInstance();
         // loadImageを使う場合
         loader.loadImage(imageUrl, new SimpleImageLoadingListener() {
             @Override
@@ -147,20 +181,36 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("requestCode", String.valueOf(requestCode));
         super.onActivityResult(requestCode, resultCode, data);
-        IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (scanResult != null) {
-            String jan = scanResult.getContents();
-            Log.d("scan", "==-----:  " + jan);
-            Uri.Builder builder = new Uri.Builder();
-            builder.scheme("https");
-            builder.authority("store-can.appspot.com");
-            builder.path("/api/bcc/GetProductInfoForJan");
-            if(StringUtil.isNotEmpty(jan)){
-                builder.appendQueryParameter("idList", jan);
-                AsyncHttpRequest task = new AsyncHttpRequest(this);
-                task.execute(builder);
+        if(requestCode == BLUETOOTH_REQUEST){
+            if(resultCode == Activity.RESULT_OK){
+                //BluetoothがONにされた場合の処理
+                Log.d("debug", "BluetoothをONにしてもらえました。");
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                startActivity(intent);
+
+
+            }else{
+                Log.d("debug", "BluetoothがONにしてもらえませんでした。");
+                finish();
             }
+        }else{
+            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+            if (scanResult != null) {
+                String jan = scanResult.getContents();
+                Log.d("scan", "==-----:  " + jan);
+                Uri.Builder builder = new Uri.Builder();
+                builder.scheme("https");
+                builder.authority("store-can.appspot.com");
+                builder.path("/api/bcc/GetProductInfoForJan");
+                if(StringUtil.isNotEmpty(jan)){
+                    builder.appendQueryParameter("idList", jan);
+                    AsyncHttpRequest task = new AsyncHttpRequest(this);
+                    task.execute(builder);
+                }
+            }
+
         }
     }
 

@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -17,12 +18,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/NOTICE' // It is not include NOTICE file
+        exclude 'META-INF/LICENSE' // It is not include LICENSE file
+    }
 }
 
 //追加-↓
 repositories {
     mavenCentral();
-    maven{
+    maven {
         url "http://dl.bintray.com/journeyapps/maven"
     }
 }
@@ -33,6 +38,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    compile 'com.jakewharton:butterknife:8.4.0'
     compile 'com.github.florent37:viewanimator:1.0.4'
     compile 'com.jakewharton:butterknife:8.4.0'
     compile 'org.androidannotations:androidannotations-api:3.0.1'
@@ -40,20 +46,20 @@ dependencies {
     compile 'com.journeyapps:zxing-android-embedded:3.0.1@aar'
     compile 'com.google.zxing:core:3.2.0'
     compile 'commons-logging:commons-logging:1.1.1'
-    compile 'commons-codec:commons-codec:1.6'
+    compile 'commons-codec:commons-codec:1.10'
     compile 'org.apache.httpcomponents:httpclient:4.2.3'
     compile 'org.apache.httpcomponents:httpcore:4.2.5'
-    testCompile 'junit:junit:4.12'
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+    compile 'com.google.android.gms:play-services-appindexing:9.8.0'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'org.jsoup:jsoup:1.8.3'
     compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.journeyapps:zxing-android-embedded:2.0.1@aar'
     compile 'com.journeyapps:zxing-android-legacy:2.0.1@aar'
     compile 'com.journeyapps:zxing-android-integration:2.0.1@aar'
-    compile 'com.google.zxing:core:3.0.1'
     compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.jakewharton:butterknife:8.4.0'
     compile 'com.beardedhen:androidbootstrap:2.3.0'
+    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.android.support:support-vector-drawable:25.0.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.3.4'
+    testCompile 'junit:junit:4.12'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
 }

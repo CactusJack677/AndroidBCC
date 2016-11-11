@@ -17,40 +17,19 @@
 
 
         <Button
-            android:text="検索結果確認"
+            android:text="SearchResult"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:id="@+id/mwsTestButton"/>
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_above="@+id/mwsTestButton"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="166dp"
             android:id="@+id/mainImage"/>
 
-
-        <Button
-            android:text="barcode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="3dp"
-            android:id="@+id/barcodeButton" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:text="B00BXVR62A"
-            android:ems="10"
-            android:layout_above="@+id/mainImage"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="27dp"
-            android:id="@+id/productCode" />
 
     </LinearLayout>
 
@@ -62,29 +41,33 @@
         android:layout_margin="3dp">
 
         <Button
-            android:id="@+id/searchButton"
+            android:id="@+id/inboundButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableTop="@drawable/ic_menu_manage"/>
+            android:drawableTop="@drawable/ic_menu_manage"
+            android:text="inbound" />
         <Button
             android:id="@+id/cameraButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableTop="@drawable/ic_menu_camera"/>
+            android:drawableTop="@drawable/ic_menu_camera"
+            android:text="barcode" />
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableTop="@drawable/ic_menu_manage"
-            />
+            android:id="@+id/settingBtn"
+            android:text="setting" />
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:drawableTop="@drawable/ic_menu_slideshow"
-            />
+            android:id="@+id/authButton"
+            android:text="auth" />
 
     </LinearLayout>
 
