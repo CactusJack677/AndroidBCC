@@ -16,10 +16,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.beardedhen.androidbootstrap.TypefaceProvider;
 import com.can.store.androidbcc.exception.MyException;
 import com.can.store.androidbcc.util.StackTraceUtil;
 import com.can.store.androidbcc.util.StringUtil;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_main);
 
+        //Bootstrapアイコンセットのロード
+        TypefaceProvider.registerDefaultIconSets();
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         String rmUserId = sp.getString("rmUserId", "aaaaa");
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * 検索ボタンの押下
          */
-        Button authButton = (Button) findViewById(R.id.authButton);
+        BootstrapButton authButton = (BootstrapButton) findViewById(R.id.authButton);
         authButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * 検索ボタンの押下
          */
-        Button settingBtn = (Button) findViewById(R.id.settingBtn);
+        BootstrapButton settingBtn = (BootstrapButton) findViewById(R.id.settingBtn);
         settingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * MWSテスト用
          */
-        Button mwsTestButton = (Button) findViewById(R.id.mwsTestButton);
+        BootstrapButton mwsTestButton = (BootstrapButton) findViewById(R.id.mwsTestButton);
         mwsTestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * カメラボタンの押下
          */
-        Button cameraButton = (Button) findViewById(R.id.cameraButton);
+        BootstrapButton cameraButton = (BootstrapButton) findViewById(R.id.cameraButton);
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -151,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         DisplayImageOptions displayImageOptions = new DisplayImageOptions.Builder()
-            .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+            .imageScaleType(ImageScaleType.EXACTLY)
             .build();
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())

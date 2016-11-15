@@ -14,14 +14,14 @@
     <com.beardedhen.androidbootstrap.BootstrapEditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textPersonName"
         app:bootstrapSize="md"
-        android:text="Name"
         android:ems="10"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="42dp"
-        android:id="@+id/mailAddress" />
+        android:id="@+id/mailAddress"
+        android:inputType="textWebEmailAddress"
+        android:hint="mail address"/>
 
     <com.beardedhen.androidbootstrap.BootstrapEditText
         android:layout_width="wrap_content"
@@ -32,7 +32,8 @@
         android:layout_alignLeft="@+id/mailAddress"
         android:layout_alignStart="@+id/mailAddress"
         android:layout_marginTop="47dp"
-        android:id="@+id/password" />
+        android:id="@+id/password"
+        android:hint="password"/>
 
     <com.beardedhen.androidbootstrap.BootstrapButton
         app:bootstrapBrand="info"

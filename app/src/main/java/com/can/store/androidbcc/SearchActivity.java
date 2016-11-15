@@ -29,8 +29,10 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import org.jsoup.Jsoup;
@@ -92,7 +94,7 @@ public class SearchActivity extends Activity {
             productInfo.getOptimazeResultList().add(optimazeResult);
         }
         Log.d("debug", productInfo.getOptimazeResultList().size() + "件あります。");
-        ProductAdapter productAdapter = new ProductAdapter(SearchActivity.this, 0, productInfo.getOptimazeResultList());
+        ProductAdapter productAdapter = new ProductAdapter(SearchActivity.this, 0, productInfo.getOptimazeResultList(), R.id.deleteProductButton);
 
         ListView listView = (ListView)findViewById(R.id.productListView);
         listView.setAdapter(productAdapter);
@@ -169,14 +171,16 @@ public class SearchActivity extends Activity {
 
     public class ProductAdapter extends ArrayAdapter<OptimazeResult> {
         private LayoutInflater layoutInflater_;
+        private int mButton;
 
-        public ProductAdapter(Context context, int textViewResourceId, List<OptimazeResult> objects) {
+        public ProductAdapter(Context context, int textViewResourceId, List<OptimazeResult> objects, int button) {
             super(context, textViewResourceId, objects);
             layoutInflater_ = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mButton = button;
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, final ViewGroup parent) {
             // 特定の行(position)のデータを得る
             OptimazeResult item = (OptimazeResult)getItem(position);
 
@@ -197,13 +201,21 @@ public class SearchActivity extends Activity {
             Log.d("debug", item.getAsin());
 
 
+            BootstrapButton btn = (BootstrapButton) convertView.findViewById(mButton);
+            btn.setTag(position);
             /**
              * 画像のローダー
              * http://qiita.com/chuross/items/e3ca79065d9b67716ace
              */
+
+
+            DisplayImageOptions displayImageOptions = new DisplayImageOptions.Builder()
+                .imageScaleType(ImageScaleType.NONE)
+                .build();
             ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
                     .memoryCache(new LruMemoryCache(2 * 1024 * 1024))
                     .memoryCacheSize(2 * 1024 * 1024)
+                    .defaultDisplayImageOptions(displayImageOptions)
                     .build();
             ImageLoader.getInstance().init(config);
 
@@ -218,12 +230,16 @@ public class SearchActivity extends Activity {
                 }
             });
 
+            final ListView list =  (ListView) parent;
             BootstrapButton deleteProductButton = (BootstrapButton)convertView.findViewById(R.id.deleteProductButton);
             deleteProductButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    TextView asin = (TextView)view.findViewById(R.id.asin);
-                    Log.d("debug", asin.getText().toString());
+
+                    long id = getItemId(position);
+                    Log.d("debug", getItem(position).getAsin());
+
+                    // TODO: 2016/11/12 webviewを切り替え
                 }
             });
 
