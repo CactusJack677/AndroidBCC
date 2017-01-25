@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -69,6 +71,31 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Log.d("debug", "Bluetoothが利用できない端末です。");
         }
+
+
+
+        WebView myWebView = (WebView)findViewById(R.id.webView1);
+
+        Log.d("a", "aaaaaaaaaaaaaaaaaaaaaaaa");
+        //最初にgoogleのページを表示する。
+        myWebView.setWebViewClient(new WebViewClient() {
+
+            public void onPageFinished(WebView myWebView, String url) {
+                try {
+                    Toast.makeText(myWebView.getContext(), "AAAAAAAAAAAAAAAAAAAAAAAAA", Toast.LENGTH_LONG).show();
+                    String script = "javascript:element = document.getElementsByTagName('body')[0]; var div = document.createElement('div'); div.textContent = 'AAAAAAAAAA<br/>AAAAAAAAAA<br/>AAAAAAAA<br/>A<br/>AAAA<br/>AA<br/>AAA<br/>AAAA<br/>AAAAAAAAAAAAAAAAA'; element.appendChild(div);";
+                    myWebView.loadUrl(script);
+                    Log.d("a", "url: " + url);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        myWebView.getSettings().setJavaScriptEnabled(true);
+        myWebView.loadUrl("https://www.amazon.co.jp/s/ref=nb_sb_noss_2?__mk_ja_JP=%E3%82%AB%E3%82%BF%E3%82%AB%E3%83%8A&url=search-alias%3Daps&field-keywords=%E3%83%89%E3%83%A9%E3%81%88%E3%82%82%E3%82%93");
+
+
 
         /**
          * 検索ボタンの押下
